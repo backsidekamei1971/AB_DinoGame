@@ -1,0 +1,77 @@
+#include "TextLCD_I2C.h"
+
+#define SDA PB_9
+#define SCL PB_8
+
+DigitalIn button(PA_6);
+
+TextLCD_I2C lcd(SDA, SCL, false); // set to true if LCD backpack has different pinout
+
+int i=15;
+int j=0;
+int jump=0;
+
+
+int main() {
+    button.mode(PullUp);
+    ThisThread::sleep_for(50ms); // give a time to wakeup the controller
+
+    if (lcd.init()) {
+        printf("init OK\n");
+        lcd.display(TextLCD_I2C::DISPLAY_ON);
+        lcd.setBacklight(true);
+
+      while(j==0){
+          i=15;
+          lcd.locate(3,0);
+          lcd.printf("  Start!     ");
+          lcd.locate(0,1);
+          lcd.printf(" ");
+       while(i>=0){
+           i=i-1;
+        lcd.locate(i, 1);
+       ThisThread::sleep_for(300ms); // give a time to wakeup the controller
+        lcd.printf("B\n");
+        lcd.locate(i+1, 1);
+        lcd.printf(" ");
+        lcd.locate(1, 1);
+        lcd.printf("A\n");
+        if(jump==1){
+            
+            jump=0;
+            lcd.locate(1,1);
+            lcd.printf(" ");
+            if(i<2){
+            lcd.locate(3,0);
+            lcd.printf(" Clear!      ");
+           // lcd.locate(1,1);
+           // lcd.printf("B\n");
+            }
+            ThisThread::sleep_for(300ms);
+            lcd.locate(1,1);
+            lcd.printf("B\n");
+            lcd.locate(1,0);
+            lcd.printf(" ");
+            lcd.locate(1,1);
+            lcd.printf(" ");
+        }
+
+        if(button.read()==0){
+        jump=1;
+            lcd.locate(1,0);
+            lcd.printf("A\n");
+            lcd.locate(1,1);
+        }
+        if(i==1 && jump==0){
+            lcd.locate(3,0);
+            lcd.printf("Game Over  ");
+            lcd.locate(0,1);
+            lcd.printf("  ");
+            ThisThread::sleep_for(400ms); // give a time to wakeup the controller
+            lcd.printf("          ");
+        }
+        }
+        }
+      }
+       
+       }
